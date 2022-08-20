@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------#
 # Imports
 #----------------------------------------------------------------------------#
-
+import sys
 import json
 import dateutil.parser
 import babel
@@ -76,7 +76,7 @@ class Show(db.Model):
     def __repr__(self):
         return '<Show {}{}>'.format(self.artist_id, self.venue_id)
 
-
+db.create_all()
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -214,6 +214,7 @@ def create_venue_form():
 def create_venue_submission():
   is_successful = True
   try: 
+    print("Working")
     name = request.form['name']
     city = request.form['city']
     state = request.form['state']
@@ -222,16 +223,19 @@ def create_venue_submission():
     genres = request.form.getlist('genres')
     image_link = request.form['image_link']
     facebook_link = request.form['facebook_link']
-    website = request.form['website']
+    website = request.form['website_link']
     seeking_talent = True if 'seeking_talent' in request.form else False 
     seeking_description = request.form['seeking_description']
 
+    print("Working 2")
     venue = Venue(name=name, city=city, state=state, address=address, phone=phone, genres=genres, facebook_link=facebook_link, image_link=image_link, website=website, seeking_talent=seeking_talent, seeking_description=seeking_description)
+    print("Working 3")
     db.session.add(venue)
     db.session.commit()
   except: 
     db.session.rollback()
     is_successful = False
+    print(sys.exc_info())
   finally: 
     db.session.close()
     if is_successful:
@@ -248,8 +252,8 @@ def delete_venue(venue_id):
     db.session.delete(venue)
     db.session.commit()
   except:
-    error = True
     db.session.rollback()
+    is_successful = False
   finally:
     db.session.close()
     if is_successful:
@@ -353,7 +357,7 @@ def edit_artist(artist_id):
     form.genres.data = artist.genres
     form.facebook_link.data = artist.facebook_link
     form.image_link.data = artist.image_link
-    form.website.data = artist.website
+    form.website_link.data = artist.website
     form.seeking_venue.data = artist.seeking_venue
     form.seeking_description.data = artist.seeking_description
 
@@ -372,7 +376,7 @@ def edit_artist_submission(artist_id):
     artist.genres = request.form.getlist('genres')
     artist.image_link = request.form['image_link']
     artist.facebook_link = request.form['facebook_link']
-    artist.website = request.form['website']
+    artist.website = request.form['website_link']
     artist.seeking_venue = True if 'seeking_venue' in request.form else False 
     artist.seeking_description = request.form['seeking_description']
 
@@ -403,7 +407,7 @@ def edit_venue(venue_id):
     form.genres.data = venue.genres
     form.facebook_link.data = venue.facebook_link
     form.image_link.data = venue.image_link
-    form.website.data = venue.website
+    form.website_link.data = venue.website
     form.seeking_talent.data = venue.seeking_talent
     form.seeking_description.data = venue.seeking_description
 
@@ -423,7 +427,7 @@ def edit_venue_submission(venue_id):
     venue.genres = request.form.getlist('genres')
     venue.image_link = request.form['image_link']
     venue.facebook_link = request.form['facebook_link']
-    venue.website = request.form['website']
+    venue.website = request.form['website_link']
     venue.seeking_talent = True if 'seeking_talent' in request.form else False 
     venue.seeking_description = request.form['seeking_description']
 
@@ -458,7 +462,7 @@ def create_artist_submission():
     genres = request.form.getlist('genres'),
     facebook_link = request.form['facebook_link']
     image_link = request.form['image_link']
-    website = request.form['website']
+    website = request.form['website_link']
     seeking_venue = True if 'seeking_venue' in request.form else False
     seeking_description = request.form['seeking_description']
 
@@ -472,7 +476,7 @@ def create_artist_submission():
   finally: 
     db.session.close()
     if is_successful:
-      flash('Artist, ' + request.form['name'] + 'was successfully created')
+      flash('Artist, ' + request.form['name'] + ' was successfully created')
     else:
       flash("Error encountered! Artist not created")
   return render_template('pages/home.html')
